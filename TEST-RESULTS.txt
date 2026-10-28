@@ -1,0 +1,25 @@
+PASS existing four-field manifest accepted
+PASS untrusted host rejected
+PASS invalid size rejected
+PASS traversal rejected
+PASS absolute path rejected
+PASS Windows reserved path rejected
+PASS loose assets rejected
+PASS checksum failure rejected before extraction
+PASS extraction reports actual bytes
+PASS assets installed with measured completion
+PASS original bytes retained in backup
+PASS private config preserved
+PASS matching receipt and bytes unlock update gate
+PASS tampered installed bytes block Play
+PASS new required version blocks Play
+PASS base traversal rejected
+PASS case-colliding base entries rejected
+PASS copy failure triggers rollback
+PASS rollback restores previously replaced bytes
+PASS fresh installation generates public defaults locally
+PASS download through complete base and asset installation produces verified ready client
+PASS fresh base cannot overwrite existing installation
+PASS network download checksum mismatch is blocked
+PASS failed downloads remove partial files
+ALL 24 CHECKS PASSED

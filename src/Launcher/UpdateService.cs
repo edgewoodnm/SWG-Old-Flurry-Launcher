@@ -17,14 +17,25 @@ public record Receipt(string Version, string PackageHash, Dictionary<string, str
 
 public sealed class UpdateService : IDisposable
 {
+    sealed class ForwardProgress(IProgress<Transfer> target, string suffix) : IProgress<Transfer>
+    {
+        public void Report(Transfer value) => target.Report(value with { Stage = value.Stage + suffix });
+    }
     public const string Repository = "edgewoodnm/SWG-Old-Flurry-Launcher";
     public const string AssetFeed = "https://raw.githubusercontent.com/edgewoodnm/SWG-Old-Flurry-Assets/main/manifest.json";
     public const string BaseFeed = "https://raw.githubusercontent.com/" + Repository + "/main/base-client.json";
     public static readonly string Data = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SWGOldFlurry");
-    readonly HttpClient http = new() { Timeout = TimeSpan.FromHours(4) };
+    readonly HttpClient http;
+    readonly string dataRoot;
     static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
 
-    public UpdateService() => http.DefaultRequestHeaders.UserAgent.ParseAdd("OldFlurryLauncher/2.0");
+    public UpdateService(HttpMessageHandler? handler = null, string? dataRoot = null)
+    {
+        http = handler == null ? new HttpClient() : new HttpClient(handler);
+        http.Timeout = TimeSpan.FromHours(4);
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("OldFlurryLauncher/2.0");
+        this.dataRoot = dataRoot ?? Data;
+    }
     public void Dispose() => http.Dispose();
 
     public static void Validate(Package p, string repository)
@@ -73,14 +84,15 @@ public sealed class UpdateService : IDisposable
     public static async Task<string> Hash(string path) { await using var f = File.OpenRead(path); return Convert.ToHexString(await SHA256.HashDataAsync(f)); }
     public async Task<string> Download(Package package, IProgress<Transfer> progress)
     {
-        Directory.CreateDirectory(Path.Combine(Data, "Downloads"));
-        var path = Path.Combine(Data, "Downloads", package.Sha256.ToUpperInvariant() + ".zip");
+        Directory.CreateDirectory(Path.Combine(dataRoot, "Downloads"));
+        var path = Path.Combine(dataRoot, "Downloads", package.Sha256.ToUpperInvariant() + ".zip");
         if (File.Exists(path) && new FileInfo(path).Length == package.Size &&
             (await Hash(path)).Equals(package.Sha256, StringComparison.OrdinalIgnoreCase)) return path;
         var partial = path + ".partial";
         try
         {
-            using var response = await http.GetAsync(package.PackageUrl, HttpCompletionOption.ResponseHeadersRead);
+            using var timeout = new CancellationTokenSource(TimeSpan.FromHours(4));
+            using var response = await http.GetAsync(package.PackageUrl, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
             response.EnsureSuccessStatusCode();
             if (response.Content.Headers.ContentLength is long length && length != package.Size) throw new IOException("Download size does not match manifest.");
             await using (var source = await response.Content.ReadAsStreamAsync())
@@ -88,7 +100,7 @@ public sealed class UpdateService : IDisposable
             {
                 byte[] buffer = new byte[131072]; long done = 0; int count;
                 var timer = System.Diagnostics.Stopwatch.StartNew();
-                while ((count = await source.ReadAsync(buffer)) > 0)
+                while ((count = await source.ReadAsync(buffer, timeout.Token)) > 0)
                 {
                     done += count;
                     if (done > package.Size) throw new IOException("Download exceeds declared size.");
@@ -133,7 +145,7 @@ public sealed class UpdateService : IDisposable
         FlurryInstallationSafety.ValidateClientReady(client);
         RejectLinks(client);
         var zip = await Download(package, progress);
-        var session = new FlurryInstallationSession();
+        var session = new FlurryInstallationSession(dataRoot);
         await Task.Run(() =>
         {
             // Retain the original launcher's ZIP limits, path validation, verified backups and rollback engine.
@@ -165,15 +177,21 @@ public sealed class UpdateService : IDisposable
         var manifest = await Read<BaseManifest>(BaseFeed);
         if (!Version.TryParse(manifest.Version, out _) || manifest.Packages.Count is < 1 or > 32) throw new InvalidDataException("Invalid base-client manifest.");
         foreach (var package in manifest.Packages) Validate(package, Repository);
+        long baseBytes = manifest.Packages.Sum(p => p.Size);
+        var destinationDrive = new DriveInfo(Path.GetPathRoot(Path.GetFullPath(destination))!);
+        if (destinationDrive.AvailableFreeSpace < baseBytes + 1_073_741_824L)
+            throw new IOException("There is not enough free space for the base client and installation workspace.");
         var stage = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(destination))!, ".oldflurry-install-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stage);
         try
         {
             var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            int part = 0;
             foreach (var package in manifest.Packages)
             {
-                var zip = await Download(package, progress);
-                await Task.Run(() => ExtractBase(zip, stage, names, progress));
+                var partProgress = new ForwardProgress(progress, $" — part {++part}/{manifest.Packages.Count}");
+                var zip = await Download(package, partProgress);
+                await Task.Run(() => ExtractBase(zip, stage, names, partProgress));
             }
             if (!File.Exists(Path.Combine(stage, "SwgClient_r.exe")) || !File.Exists(Path.Combine(stage, "sku0_client.toc"))) throw new InvalidDataException("Base client is incomplete.");
             // Generate public connection defaults locally; no owner's login/user configuration is distributed.

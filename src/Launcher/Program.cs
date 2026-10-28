@@ -98,7 +98,7 @@ public sealed class LauncherWindow : Window
         {
             var dialog = new OpenFolderDialog { Title = "Choose an empty folder for your new Old Flurry client" };
             if (dialog.ShowDialog(this) != true) return;
-            await Run(async () => { await updates.InstallBase(dialog.FolderName, Progress()); Select(dialog.FolderName); await Check(true); });
+            await Run(async () => { status.Text = "Installing a fresh Old Flurry client…"; await updates.InstallBase(dialog.FolderName, Progress()); Select(dialog.FolderName); await Check(true); });
         };
         shortcut.Click += (_, _) =>
         {
@@ -162,6 +162,13 @@ public sealed class LauncherWindow : Window
             if (!apply) { detail.Text = "Click CHECK / UPDATE to continue. Play unlocks after verification."; return; }
             await updates.InstallAssets(client, p, Progress());
             if (!await updates.Current(client, p, Progress())) throw new IOException("Installed assets did not pass verification.");
+            var latest = await updates.LatestAssets();
+            if (latest.Version != p.Version || !latest.Sha256.Equals(p.Sha256, StringComparison.OrdinalIgnoreCase))
+            {
+                status.Text = "A newer required update is now available.";
+                detail.Text = "Click CHECK / UPDATE to install " + latest.Version + ".";
+                return;
+            }
         }
         ready = true; bar.Value = 100; status.Text = "Ready to play — Old Flurry " + p.Version;
         detail.Text = "Required assets verified. Updates use the existing public TRE feed.";

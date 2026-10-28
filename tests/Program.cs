@@ -1,6 +1,8 @@
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
+using System.Net;
+using System.Net.Http;
 using SwgOldFlurryLauncher;
 
 if (args.Length > 0 && args[0] == "--preview")
@@ -55,7 +57,7 @@ if (args.Length > 0 && args[0] == "--integration")
 int passed = 0;
 void Assert(bool value, string name) { if (!value) throw new Exception(name); passed++; Console.WriteLine("PASS " + name); }
 void Reject(Action action, string name) { try { action(); } catch (Exception e) when (e is IOException or InvalidDataException or ArgumentException) { Assert(true, name); return; } throw new Exception("Accepted: " + name); }
-string root = Path.Combine(Path.GetTempPath(), "OldFlurryTests-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+string root = Path.Combine(Environment.CurrentDirectory, "work", "OldFlurryTests-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
 string Zip(string name, params (string, string)[] entries)
 {
     var path = Path.Combine(root, name); using var z = ZipFile.Open(path, ZipArchiveMode.Create);
@@ -106,6 +108,39 @@ try
     Directory.CreateDirectory(Path.Combine(rollbackClient,"b.tre"));
     Reject(()=>FlurryAssetInstallationEngine.InstallWithRollback(rollbackStage,rollbackClient,rollbackBackup),"copy failure triggers rollback");
     Assert(File.ReadAllText(Path.Combine(rollbackClient,"a.tre"))=="original","rollback restores previously replaced bytes");
+    var baseZip=Zip("tiny-base.zip",("SwgClient_r.exe","runtime sentinel"),("sku0_client.toc","archive sentinel"),("client.cfg","base config"));
+    var basePackage=new Package("1.0.0","https://github.com/"+UpdateService.Repository+"/releases/download/base-v1.0.0/base.zip",new FileInfo(baseZip).Length,await UpdateService.Hash(baseZip));
+    var fixture=new FixtureHandler(new Dictionary<string,byte[]> {
+        [UpdateService.BaseFeed]=JsonSerializer.SerializeToUtf8Bytes(new BaseManifest("1.0.0",[basePackage])),
+        [basePackage.PackageUrl]=await File.ReadAllBytesAsync(baseZip),
+        [UpdateService.AssetFeed]=JsonSerializer.SerializeToUtf8Bytes(package with {Size=new FileInfo(zip).Length,Sha256=await UpdateService.Hash(zip)}),
+        [package.PackageUrl]=await File.ReadAllBytesAsync(zip)
+    });
+    using var networkService=new UpdateService(fixture,Path.Combine(root,"network-cache"));
+    var fresh=Path.Combine(root,"network-fresh-client");
+    await networkService.InstallBase(fresh,progress);
+    Assert(File.ReadAllText(Path.Combine(fresh,"login.cfg")).Contains("73.127.195.38") && File.Exists(Path.Combine(fresh,"user.cfg")),"fresh installation generates public defaults locally");
+    var fetched=await networkService.LatestAssets();
+    await networkService.InstallAssets(fresh,fetched,progress);
+    Assert(await networkService.Current(fresh,fetched,progress),"download through complete base and asset installation produces verified ready client");
+    bool nonemptyRejected=false;
+    try {await networkService.InstallBase(fresh,progress);}catch(IOException){nonemptyRejected=true;}
+    Assert(nonemptyRejected,"fresh base cannot overwrite existing installation");
+    var mismatch=basePackage with {Sha256=new string('0',64)};
+    bool hashRejected=false;try {await networkService.Download(mismatch,progress);}catch(IOException){hashRejected=true;}
+    Assert(hashRejected,"network download checksum mismatch is blocked");
+    Assert(!Directory.GetFiles(Path.Combine(root,"network-cache","Downloads"),"*.partial").Any(),"failed downloads remove partial files");
     Console.WriteLine($"ALL {passed} CHECKS PASSED");
 }
 finally { Directory.Delete(root,true); }
+
+sealed class FixtureHandler(Dictionary<string,byte[]> files) : HttpMessageHandler
+{
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken token)
+    {
+        string url=request.RequestUri!.GetLeftPart(UriPartial.Path);
+        return Task.FromResult(files.TryGetValue(url,out var bytes)
+            ?new HttpResponseMessage(HttpStatusCode.OK){Content=new ByteArrayContent(bytes)}
+            :new HttpResponseMessage(HttpStatusCode.NotFound));
+    }
+}
