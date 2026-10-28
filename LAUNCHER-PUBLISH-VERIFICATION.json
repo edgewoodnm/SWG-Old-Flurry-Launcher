@@ -1,10 +1,8 @@
 {
-  "release_id": 426231652,
-  "size": 164744707,
-  "sha256": "c55c9d468569155a28a468ee28dc45f5fb4a7eb173c1356c2ad618a537e56edd",
-  "remote_size_and_sha256_verified": true,
+  "version": "2.1.0",
+  "release_id": 426253800,
   "draft": false,
-  "automated_checks_passed": 33,
-  "rollback_support": true,
-  "single_main_action_button": true
+  "remote_size_and_sha256_verified": true,
+  "size": 164744707,
+  "sha256": "ed538236c00d10d6ce1abbf00f11384ecbf17fc4a01a10880aec2833aa3ea8d8"
 }

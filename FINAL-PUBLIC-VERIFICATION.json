@@ -1,22 +1,41 @@
 {
   "published": true,
-  "repository": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher",
-  "download": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.0.0/OldFlurryLauncher.exe",
-  "launcher_version": "2.0.0",
-  "source_commit": "1359c89d7e960e87d5e9ee633ace1743eee600d7",
-  "base_parts": 8,
-  "base_download_bytes": 6256649731,
+  "version": "2.1.0",
+  "release": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/tag/v2.1.0",
+  "download": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.1.0/OldFlurryLauncher.exe",
+  "qa_zip": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.1.0/Old-Flurry-QA-Launcher-v2.1.0.zip",
   "all_remote_sizes_and_sha256_verified": true,
-  "existing_asset_feed_unchanged": true,
-  "existing_asset_version": "1.0.30",
-  "automated_checks_passed": 33,
+  "automated_checks_passed": 50,
+  "visual_single_button_and_artwork_check_passed": true,
   "fresh_base_real_asset_integration_passed": true,
-  "rollback_support": true,
-  "public_rollback_detection": true,
-  "local_rollback_repair": true,
-  "main_button_states": [
-    "Download & Install",
-    "Play",
-    "Update"
-  ]
+  "dedicated_client_only": true,
+  "one_action_button": true,
+  "automatic_shortcuts": true,
+  "public_login_repair": true,
+  "remember_username_locally": true,
+  "passwords_captured": false,
+  "server_status_public_feed_only": true,
+  "qa_privacy_audit_passed": true,
+  "assets": {
+    "OldFlurryLauncher.exe": {
+      "size": 164744707,
+      "sha256": "ed538236c00d10d6ce1abbf00f11384ecbf17fc4a01a10880aec2833aa3ea8d8"
+    },
+    "Old-Flurry-QA-Launcher-v2.1.0.zip": {
+      "size": 68587178,
+      "sha256": "c18742cee850b263f55c05888fc7e48941100edd8512485a8729b1569470a332"
+    },
+    "RELEASE-SHA256SUMS.txt": {
+      "size": 190,
+      "sha256": "64ae572f9068c79e7cd3eca5b0275483cab35848e1c10309d37e5344296b4749"
+    },
+    "QA-PACKAGE-PRIVACY-VERIFICATION.json": {
+      "size": 899,
+      "sha256": "e3afc28f59aabeaf9e5bd066e10d55f5c98afd7c346430d6e467dfc459498547"
+    },
+    "QA-TESTER-INSTRUCTIONS.txt": {
+      "size": 2287,
+      "sha256": "4a6678f59df53bb636ced94bcf4f4831fb4766ce0e2b0d9e0f2d5eb80bda58ca"
+    }
+  }
 }
