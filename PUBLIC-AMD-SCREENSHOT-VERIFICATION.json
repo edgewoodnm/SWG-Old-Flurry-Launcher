@@ -1,0 +1,11 @@
+{
+  "published": true,
+  "version": "v2.1.2",
+  "source_commit": "f6f0715ee1d2633508718ba4d9a080058cfdbde5",
+  "release": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/tag/v2.1.2",
+  "uploaded_sizes_and_sha256_verified": true,
+  "amd_only": true,
+  "public_asset_manifest_changed": false,
+  "older_launcher_requires_one_time_download": true,
+  "live_screenshot_confirmation": "pending"
+}
