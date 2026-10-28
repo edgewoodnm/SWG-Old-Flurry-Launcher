@@ -1,8 +1,8 @@
 {
-  "version": "2.1.0",
-  "release_id": 426253800,
+  "version": "2.1.1",
+  "release_id": 426265816,
   "draft": false,
   "remote_size_and_sha256_verified": true,
-  "size": 164744707,
-  "sha256": "ed538236c00d10d6ce1abbf00f11384ecbf17fc4a01a10880aec2833aa3ea8d8"
+  "size": 168033795,
+  "sha256": "e8df11a7d549921c1aab232ba4def828da520b5ea804ad6e6c161389f40ad5f9"
 }

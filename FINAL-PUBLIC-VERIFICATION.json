@@ -1,11 +1,11 @@
 {
   "published": true,
-  "version": "2.1.0",
-  "release": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/tag/v2.1.0",
-  "download": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.1.0/OldFlurryLauncher.exe",
-  "qa_zip": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.1.0/Old-Flurry-QA-Launcher-v2.1.0.zip",
+  "version": "2.1.1",
+  "release": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/tag/v2.1.1",
+  "download": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.1.1/OldFlurryLauncher.exe",
+  "qa_zip": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.1.1/Old-Flurry-QA-Launcher-v2.1.1.zip",
   "all_remote_sizes_and_sha256_verified": true,
-  "automated_checks_passed": 50,
+  "automated_checks_passed": 61,
   "visual_single_button_and_artwork_check_passed": true,
   "fresh_base_real_asset_integration_passed": true,
   "dedicated_client_only": true,
@@ -14,28 +14,44 @@
   "public_login_repair": true,
   "remember_username_locally": true,
   "passwords_captured": false,
-  "server_status_public_feed_only": true,
+  "server_status_external_internal_fallback": true,
   "qa_privacy_audit_passed": true,
   "assets": {
     "OldFlurryLauncher.exe": {
-      "size": 164744707,
-      "sha256": "ed538236c00d10d6ce1abbf00f11384ecbf17fc4a01a10880aec2833aa3ea8d8"
+      "size": 168033795,
+      "sha256": "e8df11a7d549921c1aab232ba4def828da520b5ea804ad6e6c161389f40ad5f9"
     },
-    "Old-Flurry-QA-Launcher-v2.1.0.zip": {
-      "size": 68587178,
-      "sha256": "c18742cee850b263f55c05888fc7e48941100edd8512485a8729b1569470a332"
+    "Old-Flurry-QA-Launcher-v2.1.1.zip": {
+      "size": 69747794,
+      "sha256": "620b8f77993722a7ce5ec697de818bbe74293da0256bff5e915f31929c310e0f"
     },
     "RELEASE-SHA256SUMS.txt": {
       "size": 190,
-      "sha256": "64ae572f9068c79e7cd3eca5b0275483cab35848e1c10309d37e5344296b4749"
+      "sha256": "48be5b39afb14b56d06f67d3b8efb20a8a7a1362775216ae3bf28d416df1b123"
     },
     "QA-PACKAGE-PRIVACY-VERIFICATION.json": {
-      "size": 899,
-      "sha256": "e3afc28f59aabeaf9e5bd066e10d55f5c98afd7c346430d6e467dfc459498547"
+      "size": 1035,
+      "sha256": "f11e41372fcbd0ae80a79b66d32af850961b6095e496db7f6d680f9cdafe1495"
     },
     "QA-TESTER-INSTRUCTIONS.txt": {
-      "size": 2287,
-      "sha256": "4a6678f59df53bb636ced94bcf4f4831fb4766ce0e2b0d9e0f2d5eb80bda58ca"
+      "size": 3060,
+      "sha256": "ade42aa4a3586d3bef2575ea5a67434887a4060c82bad541db3ee252b7fcd255"
     }
+  },
+  "anonymous_download_head_status": 200,
+  "original_tre_feed_unchanged": true,
+  "live_client_validation": {
+    "managed_install_only": true,
+    "native_startup_cause_identified": "Missing Station game/subscription feature defaults prevented SKU archives from mounting",
+    "configuration_repaired_without_redownloading_base": true,
+    "real_game_window_opened": true,
+    "real_game_responsive": true,
+    "real_game_window_matches_fullscreen_display": true,
+    "managed_dxvk_renderer_loaded_in_real_game": true,
+    "working_renderer_matches_official_dxvk_1_10_1_x32_sha256": "bd4e0b3a91f8a45e4c8ff000238b872043fea9afa7a7ba1d82e3cd18f7d65ff7",
+    "internal_status_live_result": "ONLINE",
+    "external_status_fallback_restored": true,
+    "non_amd_path_tested_without_renderer_installation": true,
+    "owner_paths_or_account_information_recorded": false
   }
 }
