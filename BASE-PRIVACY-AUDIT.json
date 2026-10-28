@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "files": 1009,
+  "bytes": 6256452191,
+  "upstream_commit": "eb107b38d6a75e43cc25d4e335493bd2d330f676",
+  "local_inputs": "Explicit native archive/TOC names, Miles audio plugins and deployed SwgClient_r.exe only",
+  "generated_configs": [
+    "client.cfg",
+    "live.cfg",
+    "preload.cfg",
+    "options.cfg"
+  ],
+  "private_configuration_copied": false,
+  "local_browser_profiles_copied": false,
+  "account_files_copied": false,
+  "local_loose_asset_overlays_copied": false,
+  "archive_crc_verified": true,
+  "package_parts": 8
+}
