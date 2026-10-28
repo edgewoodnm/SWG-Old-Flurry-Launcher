@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType><TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
-    <AssemblyName>OldFlurryLauncher</AssemblyName><Version>2.1.1</Version>
+    <AssemblyName>OldFlurryLauncher</AssemblyName><Version>2.1.2</Version>
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup><Resource Include="background.png" /><Resource Include="app.ico" /></ItemGroup>

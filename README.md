@@ -51,3 +51,13 @@ dotnet publish src/Launcher/Launcher.csproj -c Release -r win-x64 --self-contain
 ```
 
 The launcher targets Windows x64. Launcher 2.1 does not replace its own running executable automatically; future launcher binaries are available from this repository's releases. Close an older installed launcher before running a newer downloaded launcher.
+
+## AMD screenshots (2.1.2)
+
+AMD screenshot update — launcher 2.1.2
+
+Restores the previously working SWG back-buffer screenshot configuration on supported AMD/Vulkan clients using the included face-fix renderer. NVIDIA and Intel-only clients keep existing screenshot settings. The original options.cfg is backed up before repair; personal login/user settings, profiles, game assets and the TRE feed are not changed by this screenshot repair.
+
+Close the old launcher, run this updated launcher once, then launch the game normally. Existing game downloads are reused. Version 2.1.1 does not self-update its executable; installing this new launcher once is required. Thereafter the screenshot workaround is automatically checked before game launch.
+
+This uses an established configuration workaround. Automated configuration and updater checks passed; successful screenshot capture still depends on in-game verification on each affected system.

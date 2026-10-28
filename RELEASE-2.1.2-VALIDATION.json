@@ -1,0 +1,25 @@
+{
+  "version": "2.1.2",
+  "automated_checks_passed": 67,
+  "amd_only": true,
+  "non_amd_settings_preserved": true,
+  "zip_integrity_verified": true,
+  "private_paths_in_payload": false,
+  "live_screenshot_capture": "pending user confirmation",
+  "public_tre_feed_changed": false,
+  "assets": {
+    "OldFlurryLauncher.exe": {
+      "size": 168033795,
+      "sha256": "50559af03500c4aee418ba4af5b3acef29e101630fda2dfc3d94b3b1320c47a2"
+    },
+    "Old-Flurry-QA-Launcher-v2.1.2.zip": {
+      "size": 69748206,
+      "sha256": "067fd9618920696da62a44e4f460bbe3d4b1f2ad8913c6c913103321ff3c1e36"
+    },
+    "QA-TESTER-INSTRUCTIONS.txt": {
+      "size": 4011,
+      "sha256": "4920a68d077574851c1c9182b42bd7ae245483cfb335ddafc949f32ab7fe452b"
+    }
+  },
+  "single_button_preview_check": "passed"
+}

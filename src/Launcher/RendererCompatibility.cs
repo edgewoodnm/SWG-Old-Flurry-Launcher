@@ -49,6 +49,7 @@ public static class RendererCompatibility
     public static bool Prepare(string client,string? dataRoot=null,bool? supportedAmd=null)
     {
         if(!(supportedAmd??HasSupportedAmd()))return false;
+        AmdScreenshotConfiguration.Configure(client,dataRoot);
         string license=UpdateService.SafePath(client,"DXVK-LICENSE.txt");
         if(!File.Exists(license))
         {

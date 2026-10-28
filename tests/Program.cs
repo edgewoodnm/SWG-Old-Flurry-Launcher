@@ -114,7 +114,20 @@ try
     Assert(File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("windowed=false")&&File.ReadAllText(Path.Combine(runtime,"user.cfg")).Contains("windowed=false"),"fullscreen is enforced in both graphics config layers");
     Assert(File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("screenWidth=1920")&&File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("screenHeight=1080"),"fullscreen uses the current player's display dimensions");
     Assert(!RendererCompatibility.Prepare(runtime,root,false)&&!File.Exists(Path.Combine(runtime,"d3d9.dll")),"NVIDIA and Intel paths do not install the AMD renderer");
+    Assert(!File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("screenShotBackBuffer"),"non-AMD renderer path leaves screenshot settings unchanged");
+    byte[] screenshotBefore=File.ReadAllBytes(Path.Combine(runtime,"options.cfg"));
+    byte[] userBeforeScreenshot=File.ReadAllBytes(Path.Combine(runtime,"user.cfg"));
     Assert(RendererCompatibility.Prepare(runtime,root,true)&&await UpdateService.Hash(Path.Combine(runtime,"d3d9.dll"))==RendererCompatibility.Hash,"AMD renderer is installed from the verified official DLL");
+    string screenshotOptions=File.ReadAllText(Path.Combine(runtime,"options.cfg"));
+    Assert(screenshotOptions.Contains("screenShotBackBuffer=true")&&screenshotOptions.Contains("doNotLockBackBuffer=false"),"supported AMD receives the established back-buffer screenshot workaround");
+    Assert(File.ReadAllBytes(Path.Combine(runtime,"user.cfg")).SequenceEqual(userBeforeScreenshot),"screenshot repair preserves personal user configuration bytes");
+    Assert(Directory.GetFiles(Path.Combine(root,"RuntimeBackups"),"amd-screenshot-*.cfg").Any(p=>File.ReadAllBytes(p).SequenceEqual(screenshotBefore)),"screenshot repair backs up exact previous options");
+    int screenshotBackupCount=Directory.GetFiles(Path.Combine(root,"RuntimeBackups"),"amd-screenshot-*.cfg").Length;
+    RendererCompatibility.Prepare(runtime,root,true);
+    Assert(Directory.GetFiles(Path.Combine(root,"RuntimeBackups"),"amd-screenshot-*.cfg").Length==screenshotBackupCount,"existing face-fix installations receive idempotent screenshot repair");
+    File.AppendAllText(Path.Combine(runtime,"options.cfg"),"\n[Direct3d9]\nscreenShotBackBuffer=false\ndoNotLockBackBuffer=true\n[Unrelated]\nkeep=1\n");
+    RendererCompatibility.Prepare(runtime,root,true);
+    Assert(!File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("screenShotBackBuffer=false")&&File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("keep=1"),"conflicting screenshot settings are repaired while unrelated options survive");
     File.WriteAllText(Path.Combine(runtime,"d3d9.dll"),"existing renderer sentinel");RendererCompatibility.Prepare(runtime,root,true);
     Assert(Directory.GetFiles(Path.Combine(root,"RuntimeBackups"),"d3d9-*.dll").Any(p=>File.ReadAllText(p)=="existing renderer sentinel"),"an existing renderer is preserved in a verified backup before replacement");
     using(var exited=Process.Start(new ProcessStartInfo("cmd.exe","/c exit /b 7"){UseShellExecute=false,CreateNoWindow=true})!)

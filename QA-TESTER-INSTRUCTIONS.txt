@@ -25,3 +25,12 @@ If support requests a local recovery, run the installed launcher with --rollback
 
 Public downloads and release notes:
 https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/latest
+
+
+AMD screenshot update — launcher 2.1.2
+
+Restores the previously working SWG back-buffer screenshot configuration on supported AMD/Vulkan clients using the included face-fix renderer. NVIDIA and Intel-only clients keep existing screenshot settings. The original options.cfg is backed up before repair; personal login/user settings, profiles, game assets and the TRE feed are not changed by this screenshot repair.
+
+Close the old launcher, run this updated launcher once, then launch the game normally. Existing game downloads are reused. Version 2.1.1 does not self-update its executable; installing this new launcher once is required. Thereafter the screenshot workaround is automatically checked before game launch.
+
+This uses an established configuration workaround. Automated configuration and updater checks passed; successful screenshot capture still depends on in-game verification on each affected system.

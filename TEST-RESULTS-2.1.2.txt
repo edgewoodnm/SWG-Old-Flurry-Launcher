@@ -1,0 +1,4 @@
+ALL 67 CHECKS PASSED
+AMD/non-AMD configuration routing, exact backup, idempotence, conflict repair, user.cfg preservation, updater integrity, required-update gating, corruption rejection, rollback and fresh-install fixture passed.
+Full real base/archive integration remains covered by unchanged installer validation in INTEGRATION-VALIDATION.json.
+Live screenshot capture in the managed client: pending user confirmation.
