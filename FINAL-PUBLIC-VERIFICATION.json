@@ -1,0 +1,22 @@
+{
+  "published": true,
+  "repository": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher",
+  "download": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/v2.0.0/OldFlurryLauncher.exe",
+  "launcher_version": "2.0.0",
+  "source_commit": "1359c89d7e960e87d5e9ee633ace1743eee600d7",
+  "base_parts": 8,
+  "base_download_bytes": 6256649731,
+  "all_remote_sizes_and_sha256_verified": true,
+  "existing_asset_feed_unchanged": true,
+  "existing_asset_version": "1.0.30",
+  "automated_checks_passed": 33,
+  "fresh_base_real_asset_integration_passed": true,
+  "rollback_support": true,
+  "public_rollback_detection": true,
+  "local_rollback_repair": true,
+  "main_button_states": [
+    "Download & Install",
+    "Play",
+    "Update"
+  ]
+}
