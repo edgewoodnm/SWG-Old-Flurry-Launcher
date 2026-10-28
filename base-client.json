@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "packages": [
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part01.zip",
+      "size": 829923120,
+      "sha256": "0ded5f5d9851ff2354fe5ae455743e10b3f800f57a20cb4c196ef51a5a059126"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part02.zip",
+      "size": 861005621,
+      "sha256": "a9ae7d650a0d591e27aee207f168350ea3557c907f60a70d779a4fc9ee07f82e"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part03.zip",
+      "size": 881217315,
+      "sha256": "5a593e69351854b426b39560bedd300ddfb4a201b247cf15eceef815d993314d"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part04.zip",
+      "size": 895501969,
+      "sha256": "3739b34b5aa7a32ba34af9cf2c2c012ca19bb478e37c05267a61b25a82135d70"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part05.zip",
+      "size": 870771026,
+      "sha256": "0473c8d3b0c165b2f7bff3b5fef1c5c48d6650bf353f91d088fa54149d48264c"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part06.zip",
+      "size": 798641775,
+      "sha256": "03b84e2f0a2e1a002d05d43bda1adfc7cc6fd2c674decf90b4916211e7eddab8"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part07.zip",
+      "size": 803639435,
+      "sha256": "32e80c3d4436a70c93407f461c4fe36eb9aa38e9c329bf8f35117560ea7e374a"
+    },
+    {
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/download/base-v1.0.0/Old-Flurry-Base-1.0.0-part08.zip",
+      "size": 315949470,
+      "sha256": "0f84be39be2b0275b271381d3e5854196772e921d7380599ec51b79a16a4c2d7"
+    }
+  ]
+}
