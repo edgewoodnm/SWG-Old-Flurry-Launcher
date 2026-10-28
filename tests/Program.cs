@@ -3,8 +3,22 @@ using System.IO.Compression;
 using System.Text.Json;
 using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 using SwgOldFlurryLauncher;
 
+if(args.Length>0&&args[0]=="--repair-runtime")
+{
+    RuntimeConfiguration.Repair(args[1],args[2]);Console.WriteLine("MANAGED_RUNTIME_CONFIGURATION_REPAIRED");return;
+}
+if(args.Length>0&&args[0]=="--graphics-probe")
+{
+    Console.WriteLine("SUPPORTED_AMD_VULKAN="+RendererCompatibility.HasSupportedAmd());return;
+}
+if(args.Length>0&&args[0]=="--launch-probe")
+{
+    var result=await GameLaunchService.Start(args[1]);
+    Console.WriteLine(JsonSerializer.Serialize(result));return;
+}
 if (args.Length > 0 && args[0] == "--preview")
 {
     Exception? failure = null;
@@ -85,6 +99,29 @@ try
     Assert(ServerStatusService.Parse(JsonSerializer.Serialize(new{status="OFFLINE",checked_at=now}),now)=="OFFLINE","fresh public server status displays offline");
     Assert(ServerStatusService.Parse(JsonSerializer.Serialize(new{status="ONLINE",checked_at=now.AddMinutes(-3)}),now)=="UNAVAILABLE","stale status cannot falsely report online");
     Assert(ServerStatusService.Parse("broken status",now)=="UNAVAILABLE","invalid public server status is handled safely");
+    using(var internalStatus=new ServerStatusService(new FixtureHandler(new(){[ServerStatusService.InternalFeed]=JsonSerializer.SerializeToUtf8Bytes(new{status="ONLINE",checked_at=now})})))
+        Assert(await internalStatus.Read()=="ONLINE","internal status fallback works when the external endpoint fails");
+    using(var externalStatus=new ServerStatusService(new FixtureHandler(new(){[ServerStatusService.Feed]=JsonSerializer.SerializeToUtf8Bytes(new{status="OFFLINE",checked_at=now})})))
+        Assert(await externalStatus.Read()=="OFFLINE","external status is used when available");
+    var runtime=Path.Combine(root,"runtime-repair");Directory.CreateDirectory(runtime);File.WriteAllText(Path.Combine(runtime,"live.cfg"),"[SharedFile]\nsearchTOC_00_0=sku0_client.toc\n");
+    RuntimeConfiguration.Repair(runtime,root);
+    string runtimeText=File.ReadAllText(Path.Combine(runtime,"live.cfg"));
+    Assert(runtimeText.Contains("gameFeatures=0xffffffff")&&runtimeText.Contains("subscriptionFeatures=0x01"),"clean client receives native feature flags needed to mount SKU archives");
+    Assert(runtimeText.Contains("searchTOC_00_0=sku0_client.toc"),"runtime repair preserves archive registration");
+    int runtimeBackups=Directory.GetFiles(Path.Combine(root,"RuntimeBackups")).Length;RuntimeConfiguration.Repair(runtime,root);
+    Assert(Directory.GetFiles(Path.Combine(root,"RuntimeBackups")).Length==runtimeBackups,"correct runtime config is left unchanged");
+    FullscreenConfiguration.Configure(runtime,root,1920,1080,60);
+    Assert(File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("windowed=false")&&File.ReadAllText(Path.Combine(runtime,"user.cfg")).Contains("windowed=false"),"fullscreen is enforced in both graphics config layers");
+    Assert(File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("screenWidth=1920")&&File.ReadAllText(Path.Combine(runtime,"options.cfg")).Contains("screenHeight=1080"),"fullscreen uses the current player's display dimensions");
+    Assert(!RendererCompatibility.Prepare(runtime,root,false)&&!File.Exists(Path.Combine(runtime,"d3d9.dll")),"NVIDIA and Intel paths do not install the AMD renderer");
+    Assert(RendererCompatibility.Prepare(runtime,root,true)&&await UpdateService.Hash(Path.Combine(runtime,"d3d9.dll"))==RendererCompatibility.Hash,"AMD renderer is installed from the verified official DLL");
+    File.WriteAllText(Path.Combine(runtime,"d3d9.dll"),"existing renderer sentinel");RendererCompatibility.Prepare(runtime,root,true);
+    Assert(Directory.GetFiles(Path.Combine(root,"RuntimeBackups"),"d3d9-*.dll").Any(p=>File.ReadAllText(p)=="existing renderer sentinel"),"an existing renderer is preserved in a verified backup before replacement");
+    using(var exited=Process.Start(new ProcessStartInfo("cmd.exe","/c exit /b 7"){UseShellExecute=false,CreateNoWindow=true})!)
+    {
+        bool failed=false;try{await GameLaunchService.ObserveStartup(exited,TimeSpan.FromSeconds(2),TimeSpan.Zero);}catch(IOException){failed=true;}
+        Assert(failed,"a client that exits at startup cannot be reported as launched");
+    }
     var loginClient=Path.Combine(root,"login-repair");Directory.CreateDirectory(loginClient);
     var loginCache=Path.Combine(root,"login-backups");
     FlurryLoginConfigurator.Configure(loginClient,loginCache);
@@ -151,7 +188,7 @@ try
     Directory.CreateDirectory(Path.Combine(rollbackClient,"b.tre"));
     Reject(()=>FlurryAssetInstallationEngine.InstallWithRollback(rollbackStage,rollbackClient,rollbackBackup),"copy failure triggers rollback");
     Assert(File.ReadAllText(Path.Combine(rollbackClient,"a.tre"))=="original","rollback restores previously replaced bytes");
-    var baseZip=Zip("tiny-base.zip",("SwgClient_r.exe","runtime sentinel"),("sku0_client.toc","archive sentinel"),("client.cfg","base config"));
+    var baseZip=Zip("tiny-base.zip",("SwgClient_r.exe","runtime sentinel"),("sku0_client.toc","archive sentinel"),("client.cfg","base config"),("live.cfg","[SharedFile]\nsearchTOC_00_0=sku0_client.toc\n"));
     var basePackage=new Package("1.0.0","https://github.com/"+UpdateService.Repository+"/releases/download/base-v1.0.0/base.zip",new FileInfo(baseZip).Length,await UpdateService.Hash(baseZip));
     var fixture=new FixtureHandler(new Dictionary<string,byte[]> {
         [UpdateService.BaseFeed]=JsonSerializer.SerializeToUtf8Bytes(new BaseManifest("1.0.0",[basePackage])),

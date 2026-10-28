@@ -1,4 +1,4 @@
-OLD FLURRY CLIENT - QA LAUNCHER 2.1
+OLD FLURRY CLIENT - QA LAUNCHER 2.1.1
 
 1. Extract this ZIP into Downloads (not onto the Desktop).
 2. Run OldFlurryLauncher.exe. If an older installed launcher is open, close it first.
@@ -8,6 +8,10 @@ OLD FLURRY CLIENT - QA LAUNCHER 2.1
 6. Keep using the Desktop shortcut. Required updates and published rollbacks are detected and applied automatically. If an operation fails, UPDATE retries it; Play remains locked until verification succeeds.
 
 The window has one action button, real progress, unobscured artwork and automatic server status. If the public status feed is unreachable or stale, it shows UNAVAILABLE.
+
+Server status tries the external endpoint and then the internal server endpoint, just like the original launcher. If both fail or return stale data it shows UNAVAILABLE. Version 2.1.1 repairs the non-personal native feature flags required to mount the game archives; existing downloads do not need to be repeated. A launch is only confirmed after the game process and window remain open.
+
+The game launches fullscreen at your own current display resolution. Supported AMD/Vulkan systems automatically receive the same verified DXVK face fix used by the working client. NVIDIA/Intel-only PCs retain their original renderer. An existing renderer is backed up before replacement. The DXVK license is included in this ZIP and installed with the AMD compatibility component.
 
 The public login address and port are configured automatically. Missing or incorrect connection settings are repaired before Play; no developer login.cfg is included in this ZIP.
 

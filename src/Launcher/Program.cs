@@ -114,8 +114,10 @@ public sealed class LauncherWindow : Window
             await Check(true);
             if (!ready || !launch) return;
             FlurryLoginConfigurator.Configure(client);
-            Process.Start(new ProcessStartInfo(Path.Combine(client, "SwgClient_r.exe")) { WorkingDirectory = client, UseShellExecute = true });
-            status.Text = "Game launched. Keep this launcher for your next session.";
+            status.Text="Starting Old Flurry…";operationLabel="STARTING…";Buttons();
+            var launched=await GameLaunchService.Start(client);
+            status.Text=launched.WindowOpened?"Old Flurry game window opened.":"Old Flurry is still starting.";
+            detail.Text=launched.WindowOpened?"Game process and window confirmed running.":"The game process is running, but a game window has not appeared yet.";
         });
         Loaded += async (_, _) => await Run(async () =>
         {
@@ -162,6 +164,7 @@ public sealed class LauncherWindow : Window
     async Task Check(bool apply)
     {
         ready = false; status.Text = "Checking required updates…"; bar.Value = 0;
+        RuntimeConfiguration.Repair(client);
         UsernameMemory.RememberMostRecent(client);
         FlurryLoginConfigurator.Configure(client);
         var p = await updates.LatestAssets();

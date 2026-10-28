@@ -208,6 +208,7 @@ public sealed class UpdateService : IDisposable
             // Generate public connection defaults locally; no owner's login/user configuration is distributed.
             await File.WriteAllTextAsync(Path.Combine(stage, "login.cfg"), FlurryLoginConfigurator.DefaultConfiguration);
             await File.WriteAllTextAsync(Path.Combine(stage, "user.cfg"), "# Personal preferences are stored locally.\n");
+            RuntimeConfiguration.Repair(stage,dataRoot);
             // Recheck after a potentially long download. Never merge a fresh base into an existing client.
             RejectLinks(destination);
             if (Directory.Exists(destination)) Directory.Delete(destination, false);

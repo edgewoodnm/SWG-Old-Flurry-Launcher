@@ -7,7 +7,9 @@ namespace SwgOldFlurryLauncher;
 public sealed class ServerStatusService : IDisposable
 {
     public const string Feed="http://73.127.195.38/flurry-status/status.json";
-    readonly HttpClient http=new(){Timeout=TimeSpan.FromSeconds(4)};
+    public const string InternalFeed="http://10.0.0.220/flurry-status/status.json";
+    readonly HttpClient http;
+    public ServerStatusService(HttpMessageHandler? handler=null){http=handler==null?new HttpClient():new HttpClient(handler);http.Timeout=TimeSpan.FromSeconds(4);}
     public static string Parse(string json,DateTimeOffset now)
     {
         try
@@ -21,10 +23,19 @@ public sealed class ServerStatusService : IDisposable
     }
     public async Task<string> Read()
     {
+        foreach(string endpoint in new[]{Feed,InternalFeed})
+        {
+            string status=await ReadFrom(endpoint);
+            if(status is "ONLINE" or "OFFLINE")return status;
+        }
+        return "UNAVAILABLE";
+    }
+    async Task<string> ReadFrom(string endpoint)
+    {
         try
         {
             using var timeout=new CancellationTokenSource(TimeSpan.FromSeconds(4));
-            using var response=await http.GetAsync(Feed+"?t="+DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),HttpCompletionOption.ResponseHeadersRead,timeout.Token);
+            using var response=await http.GetAsync(endpoint+"?t="+DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),HttpCompletionOption.ResponseHeadersRead,timeout.Token);
             response.EnsureSuccessStatusCode();
             await using var stream=await response.Content.ReadAsStreamAsync(timeout.Token);
             using var buffer=new MemoryStream();byte[] bytes=new byte[1024];int count;

@@ -2,9 +2,10 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType><TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
-    <AssemblyName>OldFlurryLauncher</AssemblyName><Version>2.1.0</Version>
+    <AssemblyName>OldFlurryLauncher</AssemblyName><Version>2.1.1</Version>
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup><Resource Include="background.png" /><Resource Include="app.ico" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="Runtime/d3d9.dll" LogicalName="OldFlurry.DXVK.d3d9.dll" /><EmbeddedResource Include="Runtime/DXVK-LICENSE.txt" LogicalName="OldFlurry.DXVK.LICENSE" /></ItemGroup>
   <ItemGroup Condition="'$(PublishSingleFile)' == 'true'"><AssemblyMetadata Include="Distribution" Value="SelfContained" /></ItemGroup>
 </Project>

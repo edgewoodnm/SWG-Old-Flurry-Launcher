@@ -4,6 +4,17 @@ PASS fresh public server status displays online
 PASS fresh public server status displays offline
 PASS stale status cannot falsely report online
 PASS invalid public server status is handled safely
+PASS internal status fallback works when the external endpoint fails
+PASS external status is used when available
+PASS clean client receives native feature flags needed to mount SKU archives
+PASS runtime repair preserves archive registration
+PASS correct runtime config is left unchanged
+PASS fullscreen is enforced in both graphics config layers
+PASS fullscreen uses the current player's display dimensions
+PASS NVIDIA and Intel paths do not install the AMD renderer
+PASS AMD renderer is installed from the verified official DLL
+PASS an existing renderer is preserved in a verified backup before replacement
+PASS a client that exits at startup cannot be reported as launched
 PASS missing login config is generated with the public server address
 PASS incorrect address, port and old fallback endpoints are corrected
 PASS connection repair preserves unrelated local settings
@@ -48,4 +59,4 @@ PASS a later forward release is detected after a public rollback
 PASS fresh base cannot overwrite existing installation
 PASS network download checksum mismatch is blocked
 PASS failed downloads remove partial files
-ALL 50 CHECKS PASSED
+ALL 61 CHECKS PASSED
