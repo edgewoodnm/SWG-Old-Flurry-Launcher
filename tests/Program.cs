@@ -123,6 +123,22 @@ try
     var fetched=await networkService.LatestAssets();
     await networkService.InstallAssets(fresh,fetched,progress);
     Assert(await networkService.Current(fresh,fetched,progress),"download through complete base and asset installation produces verified ready client");
+    var history=new RollbackService(Path.Combine(root,"network-cache"));
+    Assert(history.Available(fresh),"successful update records rollback history");
+    File.WriteAllText(Path.Combine(fresh,"test.tre"),"modified after update");
+    bool changedRejected=false;try{await history.Restore(fresh,progress);}catch(IOException){changedRejected=true;}
+    Assert(changedRejected && File.ReadAllText(Path.Combine(fresh,"client.cfg"))=="new config","rollback refuses to overwrite later edits and leaves installation intact");
+    File.WriteAllText(Path.Combine(fresh,"test.tre"),"new assets");
+    await history.Restore(fresh,progress);
+    Assert(!File.Exists(Path.Combine(fresh,"test.tre")) && File.ReadAllText(Path.Combine(fresh,"client.cfg"))=="base config","rollback removes new files and restores original bytes");
+    Assert(!await networkService.Current(fresh,fetched,progress),"rollback cannot bypass required-update verification");
+    Assert(!history.Available(fresh),"completed rollback is not offered twice");
+    await networkService.InstallAssets(fresh,fetched,progress);
+    Assert(await networkService.Current(fresh,fetched,progress),"launcher repairs a rolled-back installation to the public required package");
+    Assert(!await networkService.Current(fresh,fetched with {Version="0.9.0"},progress),"public manifest rollback is detected even when its numeric version is older");
+    await networkService.InstallAssets(fresh,fetched with {Version="0.9.0"},progress);
+    Assert(await networkService.Current(fresh,fetched with {Version="0.9.0"},progress),"public release rollback installs and verifies an older required version");
+    Assert(!await networkService.Current(fresh,fetched,progress),"a later forward release is detected after a public rollback");
     bool nonemptyRejected=false;
     try {await networkService.InstallBase(fresh,progress);}catch(IOException){nonemptyRejected=true;}
     Assert(nonemptyRejected,"fresh base cannot overwrite existing installation");

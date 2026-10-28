@@ -21,6 +21,8 @@ Publish a higher numeric version for every correction. Upload the cumulative ZIP
 
 Every latest custom asset package is mandatory for this launcher. There is no new `forceUpdate` or `minimumVersion` field required in the existing feed. The launcher records the installed package hash plus individual installed file hashes locally and rechecks them before Play. Settings and profiles are outside that receipt and remain local.
 
+Rollback detection compares both the version and exact package hash; it does not assume only increasing versions are valid. A manifest pointing back to an older trusted TRE-only release is therefore detected and installed. Prefer publishing a higher-numbered corrective release containing the desired reverted TRE content, so older launchers and release history remain easy to follow. Never point this new TRE-only installer at historical loose-asset ZIPs. After a manual local rollback, required-release verification detects the restored state and offers Update to repair it. The local Roll Back button uses per-update verified backups and a transaction journal; it cannot reconstruct complete rollback history for installations performed by the old launcher.
+
 # Separate base-client manifest
 
 `base-client.json` belongs to the new launcher repository, never the existing asset feed:

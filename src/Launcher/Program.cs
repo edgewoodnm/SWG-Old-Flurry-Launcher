@@ -49,15 +49,15 @@ public static class Program
 public sealed class LauncherWindow : Window
 {
     readonly UpdateService updates = new();
-    readonly TextBlock status = new() { Text = "Choose your client or install a fresh copy.", TextWrapping = TextWrapping.Wrap, FontSize = 18 };
+    readonly TextBlock status = new() { Text = "Click Download & Install to get started.", TextWrapping = TextWrapping.Wrap, FontSize = 18 };
     readonly TextBlock detail = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.LightGray };
     readonly TextBlock folderText = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.LightGray };
-    readonly ProgressBar bar = new() { Minimum = 0, Maximum = 100, Height = 12, Foreground = Brushes.OrangeRed };
-    readonly Button play = MakeButton("PLAY", true);
-    readonly Button update = MakeButton("CHECK / UPDATE");
+    readonly ProgressBar bar = new() { Minimum = 0, Maximum = 100, Height = 12, Foreground = Brushes.OrangeRed, Background = new SolidColorBrush(Color.FromRgb(38,39,45)), BorderBrush = Brushes.DimGray };
+    readonly Button play = MakeButton("DOWNLOAD & INSTALL", true);
+    readonly Button update = MakeButton("CHECK FOR UPDATES");
     readonly Button browse = MakeButton("USE EXISTING CLIENT");
-    readonly Button install = MakeButton("INSTALL NEW CLIENT");
     readonly Button shortcut = MakeButton("INSTALL LAUNCHER & SHORTCUTS");
+    readonly Button rollback = MakeButton("ROLL BACK LAST UPDATE");
     readonly string saved = Path.Combine(UpdateService.Data, "SelectedClient.txt");
     string client = "";
     bool busy, ready;
@@ -84,7 +84,9 @@ public sealed class LauncherWindow : Window
         inner.Children.Add(new TextBlock { Text = "DARK PATH EDITION  •  LAUNCHER 2.0", Foreground = Brushes.OrangeRed, Margin = new Thickness(0, 0, 0, 18) });
         inner.Children.Add(status); inner.Children.Add(folderText);
         bar.Margin = new Thickness(0, 16, 0, 8); inner.Children.Add(bar); inner.Children.Add(detail);
-        var actions = new WrapPanel { Margin = new Thickness(0, 12, 0, 0) }; actions.Children.Add(play); actions.Children.Add(update); actions.Children.Add(browse); actions.Children.Add(install); actions.Children.Add(shortcut); inner.Children.Add(actions);
+        play.FontSize=18;play.MinWidth=225;
+        var primaryRow=new StackPanel {Margin=new Thickness(0,14,0,0),HorizontalAlignment=HorizontalAlignment.Left};primaryRow.Children.Add(play);inner.Children.Add(primaryRow);
+        var actions = new WrapPanel { Margin = new Thickness(0, 8, 0, 0) }; actions.Children.Add(browse); actions.Children.Add(update); actions.Children.Add(rollback); actions.Children.Add(shortcut); inner.Children.Add(actions);
         root.Children.Add(panel); Content = root;
         browse.Click += async (_, _) =>
         {
@@ -93,23 +95,36 @@ public sealed class LauncherWindow : Window
             if (!SwgClientLocator.IsValidClient(dialog.FolderName)) { MessageBox.Show("Choose the folder containing SwgClient_r.exe."); return; }
             await Run(async () => { Select(dialog.FolderName); await Check(false); });
         };
-        update.Click += async (_, _) => await Run(() => Check(true));
-        install.Click += async (_, _) =>
-        {
-            var dialog = new OpenFolderDialog { Title = "Choose an empty folder for your new Old Flurry client" };
-            if (dialog.ShowDialog(this) != true) return;
-            await Run(async () => { status.Text = "Installing a fresh Old Flurry client…"; await updates.InstallBase(dialog.FolderName, Progress()); Select(dialog.FolderName); await Check(true); });
-        };
+        update.Click += async (_, _) => await Run(() => Check(false));
         shortcut.Click += (_, _) =>
         {
             var info = new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = true }; info.ArgumentList.Add("--install");
             Process.Start(info); Close();
         };
+        rollback.Click += async (_, _) =>
+        {
+            if(MessageBox.Show(this,"Restore the files from before the last update? Newly added update files will be removed. Required release checks still apply before Play.","Roll Back Last Update",MessageBoxButton.YesNo,MessageBoxImage.Question)!=MessageBoxResult.Yes)return;
+            await Run(async()=>
+            {
+                ready=false;status.Text="Restoring previous update…";
+                var progress=Progress();
+                detail.Text=await Task.Run(()=>new RollbackService().Restore(client,progress));
+                await Check(false);
+                detail.Text="Rollback complete. "+detail.Text;
+            });
+        };
         play.Click += async (_, _) => await Run(async () =>
         {
+            if(client.Length==0)
+            {
+                string destination=Path.Combine(UpdateService.Data,"Game");
+                status.Text="Downloading and installing Old Flurry…";
+                await updates.InstallBase(destination,Progress());Select(destination);await Check(true);return;
+            }
+            bool launch=ready;
             // Always obtain the live manifest immediately before launching; a disabled button alone is insufficient.
             await Check(true);
-            if (!ready) return;
+            if (!ready || !launch) return;
             FlurryLoginConfigurator.Configure(client);
             Process.Start(new ProcessStartInfo(Path.Combine(client, "SwgClient_r.exe")) { WorkingDirectory = client, UseShellExecute = true });
             status.Text = "Game launched. Keep this launcher for your next session.";
@@ -141,9 +156,12 @@ public sealed class LauncherWindow : Window
     }
     void Buttons()
     {
-        play.IsEnabled = !busy && ready;
+        play.Content=busy?"WORKING…":client.Length==0?"DOWNLOAD & INSTALL":ready?"PLAY":"UPDATE";
+        play.IsEnabled = !busy;
         update.IsEnabled = !busy && client.Length > 0;
-        browse.IsEnabled = install.IsEnabled = shortcut.IsEnabled = !busy;
+        browse.IsEnabled = shortcut.IsEnabled = !busy;
+        try {rollback.IsEnabled=!busy && client.Length>0 && new RollbackService().Available(client);}
+        catch {rollback.IsEnabled=false;}
     }
     async Task Run(Func<Task> operation)
     {
@@ -159,14 +177,14 @@ public sealed class LauncherWindow : Window
         if (!await updates.Current(client, p, Progress()))
         {
             status.Text = "Required update: Old Flurry " + p.Version;
-            if (!apply) { detail.Text = "Click CHECK / UPDATE to continue. Play unlocks after verification."; return; }
+            if (!apply) { detail.Text = "Click UPDATE to continue. Play unlocks after verification."; return; }
             await updates.InstallAssets(client, p, Progress());
             if (!await updates.Current(client, p, Progress())) throw new IOException("Installed assets did not pass verification.");
             var latest = await updates.LatestAssets();
             if (latest.Version != p.Version || !latest.Sha256.Equals(p.Sha256, StringComparison.OrdinalIgnoreCase))
             {
                 status.Text = "A newer required update is now available.";
-                detail.Text = "Click CHECK / UPDATE to install " + latest.Version + ".";
+                detail.Text = "Click UPDATE to install " + latest.Version + ".";
                 return;
             }
         }

@@ -3,9 +3,9 @@
 Download **OldFlurryLauncher.exe** from [the latest launcher release](https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/latest).
 
 1. Run the launcher and choose **Install launcher & shortcuts** to keep it permanently installed. No administrator account or separate .NET installation is required.
-2. Choose **Install new client**, then an empty folder. The launcher downloads the separate base-client packages, verifies each SHA256, and installs them.
-3. Custom content comes from the existing [Old Flurry public assets feed](https://github.com/edgewoodnm/SWG-Old-Flurry-Assets). Click **Check / Update** when required.
-4. Choose **Play**. Keep using this launcher for every session; required updates are checked before the game starts.
+2. Click the main **Download & Install** button. The launcher downloads the separate base-client packages, verifies each SHA256, and installs the game under `%LOCALAPPDATA%/SWGOldFlurry/Game`.
+3. Custom content comes from the existing [Old Flurry public assets feed](https://github.com/edgewoodnm/SWG-Old-Flurry-Assets). The same main button changes to **Update** when a required package changes, and to **Play** after successful installation and verification.
+4. Click **Play**. Keep using this launcher for every session; required updates are checked before the game starts.
 
 Existing players can choose **Use existing client** instead of downloading a fresh base. Backups of replaced custom assets remain under `%LOCALAPPDATA%/SWGOldFlurry/Installations`. Personal settings and profiles are preserved.
 
@@ -22,6 +22,12 @@ Downloads and extraction display actual bytes processed. Backup and installation
 The base is a separate set of independently verified ZIP parts in the `base-v1.0.0` release. Source code stays small; game packages are release assets. The clean upstream runtime is pinned to SWG-Source/client-assets commit `eb107b38d6a75e43cc25d4e335493bd2d330f676`, with the deployed Old Flurry client executable and explicitly selected native archives. Owner profiles, account files, browser databases, logs, screenshots, developer overlays, private repositories and saved login/user configuration are excluded. Public connection defaults and empty personal preferences are generated on each player's PC.
 
 Future custom content releases remain cumulative **TRE-only** packages in the existing assets repository. This launcher does not run the old upstream Git-pull updater over customized clients.
+
+## Rollbacks and repair
+
+**Roll Back Last Update** restores the previous bytes, removes files newly added by that update, and restores the previous local update receipt. Every completed new-launcher update has a verified backup journal. Rollback refuses to overwrite files edited since the update or use damaged backups. It prepares verified recovery copies so a failed rollback can restore the current update. Updates performed by the old launcher have no complete journal and cannot be automatically reversed by this feature.
+
+The public manifest remains authoritative. A published rollback or corrected cumulative TRE package is detected even if its version number is lower. The main button changes to **Update**, and the required package is installed and checked before Play. Manually restoring older local files also triggers repair when they differ from the currently required public package. Local rollback does not bypass mandatory updates. To keep everyone on reverted content, publish the intended TRE snapshot in the public feed, preferably as a higher correction version.
 
 See [UPDATE-FORMAT.md](UPDATE-FORMAT.md) for the exact release contract and publication order.
 

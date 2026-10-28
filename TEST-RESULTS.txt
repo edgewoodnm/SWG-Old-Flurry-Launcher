@@ -19,7 +19,16 @@ PASS copy failure triggers rollback
 PASS rollback restores previously replaced bytes
 PASS fresh installation generates public defaults locally
 PASS download through complete base and asset installation produces verified ready client
+PASS successful update records rollback history
+PASS rollback refuses to overwrite later edits and leaves installation intact
+PASS rollback removes new files and restores original bytes
+PASS rollback cannot bypass required-update verification
+PASS completed rollback is not offered twice
+PASS launcher repairs a rolled-back installation to the public required package
+PASS public manifest rollback is detected even when its numeric version is older
+PASS public release rollback installs and verifies an older required version
+PASS a later forward release is detected after a public rollback
 PASS fresh base cannot overwrite existing installation
 PASS network download checksum mismatch is blocked
 PASS failed downloads remove partial files
-ALL 24 CHECKS PASSED
+ALL 33 CHECKS PASSED

@@ -146,6 +146,8 @@ public sealed class UpdateService : IDisposable
         RejectLinks(client);
         var zip = await Download(package, progress);
         var session = new FlurryInstallationSession(dataRoot);
+        var rollback = new RollbackService(dataRoot);
+        string history = "";
         await Task.Run(() =>
         {
             // Retain the original launcher's ZIP limits, path validation, verified backups and rollback engine.
@@ -154,6 +156,10 @@ public sealed class UpdateService : IDisposable
             FlurryInstallationSafety.ValidateClientReady(client);
             FlurryAssetInstallationEngine.PrepareBackups(session.StagingDirectory, client, session.BackupDirectory,
                 (done, total) => progress.Report(new("Backing up assets", done, total)));
+        });
+        history = await rollback.Capture(client, session, package);
+        await Task.Run(() =>
+        {
             FlurryInstallationSafety.ValidateClientReady(client);
             FlurryAssetInstallationEngine.InstallWithRollback(session.StagingDirectory, client, session.BackupDirectory,
                 (done, total) => progress.Report(new("Installing and verifying assets", done, total)));
@@ -167,6 +173,7 @@ public sealed class UpdateService : IDisposable
         RejectLinks(receiptPath + ".tmp");
         await File.WriteAllTextAsync(receiptPath + ".tmp", JsonSerializer.Serialize(new Receipt(package.Version, package.Sha256, hashes), Json));
         File.Move(receiptPath + ".tmp", receiptPath, true);
+        await rollback.Complete(history);
         Directory.Delete(session.StagingDirectory, true);
     }
 
