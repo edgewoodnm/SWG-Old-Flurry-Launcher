@@ -1,3 +1,20 @@
+PASS external installs and legacy saved client paths are ignored
+PASS only the dedicated Old Flurry install is recognized
+PASS fresh public server status displays online
+PASS fresh public server status displays offline
+PASS stale status cannot falsely report online
+PASS invalid public server status is handled safely
+PASS missing login config is generated with the public server address
+PASS incorrect address, port and old fallback endpoints are corrected
+PASS connection repair preserves unrelated local settings
+PASS existing login config is backed up before repair
+PASS already-correct login config is not rewritten
+PASS missing login section and fields are added
+PASS fresh QA client starts without an owner username
+PASS last successful local username is saved in the native login.cfg setting
+PASS connection repair preserves the remembered username
+PASS changing the account in game replaces the remembered login name
+PASS remembered usernames cannot inject configuration settings
 PASS existing four-field manifest accepted
 PASS untrusted host rejected
 PASS invalid size rejected
@@ -31,4 +48,4 @@ PASS a later forward release is detected after a public rollback
 PASS fresh base cannot overwrite existing installation
 PASS network download checksum mismatch is blocked
 PASS failed downloads remove partial files
-ALL 33 CHECKS PASSED
+ALL 50 CHECKS PASSED

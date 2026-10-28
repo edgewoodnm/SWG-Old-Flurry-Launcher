@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "version": "2.1.0",
+  "bundle": "Old-Flurry-QA-Launcher-v2.1.0.zip",
+  "contents": [
+    "OldFlurryLauncher.exe",
+    "QA-TESTER-INSTRUCTIONS.txt",
+    "SHA256SUMS.txt"
+  ],
+  "launcher_sha256": "ed538236c00d10d6ce1abbf00f11384ecbf17fc4a01a10880aec2833aa3ea8d8",
+  "qa_zip_sha256": "c18742cee850b263f55c05888fc7e48941100edd8512485a8729b1569470a332",
+  "owner_machine_path_found": false,
+  "private_lan_address_found": false,
+  "personal_config_or_game_data_included": false,
+  "paths_resolved_from_each_testers_profile": true,
+  "single_action_button": true,
+  "dedicated_client_only": true,
+  "automatic_desktop_shortcut": true,
+  "taskbar_icon_embedded": true,
+  "taskbar_pinning": "Windows requires a one-time user pin",
+  "public_login_config_repair": true,
+  "automated_checks_passed": 50,
+  "visual_single_button_and_artwork_check_passed": true
+}

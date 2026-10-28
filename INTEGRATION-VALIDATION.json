@@ -4,7 +4,5 @@
   "asset_files": 5,
   "base_file_hashes_verified": true,
   "all_registered_archives_present": true,
-  "real_asset_package_installed": true,
-  "toc_referenced_archive_count": 198,
-  "missing_toc_archives": []
+  "real_asset_package_installed": true
 }

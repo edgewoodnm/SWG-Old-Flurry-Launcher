@@ -1,0 +1,23 @@
+OLD FLURRY CLIENT - QA LAUNCHER 2.1
+
+1. Extract this ZIP into Downloads (not onto the Desktop).
+2. Run OldFlurryLauncher.exe. If an older installed launcher is open, close it first.
+3. Setup creates one Old Flurry Launcher Desktop shortcut and a Start Menu shortcut automatically. The launcher and game files stay in your own local app-data folder.
+4. Click DOWNLOAD & INSTALL. Allow at least 15 GB free disk space. A fresh client download is about 6.26 GB plus the current custom TRE update.
+5. Installation and required updates must finish and pass verification before the button becomes PLAY.
+6. Keep using the Desktop shortcut. Required updates and published rollbacks are detected and applied automatically. If an operation fails, UPDATE retries it; Play remains locked until verification succeeds.
+
+The window has one action button, real progress, unobscured artwork and automatic server status. If the public status feed is unreachable or stale, it shows UNAVAILABLE.
+
+The public login address and port are configured automatically. Missing or incorrect connection settings are repaired before Play; no developer login.cfg is included in this ZIP.
+
+After signing in, your own username is remembered locally in login.cfg as loginClientID. It is prefilled next time. Manually enter a different name on the game login screen and sign in to remember that name instead. Passwords are not captured or prefilled by the launcher. The QA package starts without any saved account name.
+
+To keep the icon on the Windows taskbar, right-click the running Old Flurry icon and choose Pin to taskbar once. Windows controls pinning.
+
+This package contains no developer accounts, saved login/user settings, profiles, character lists, browser data, logs, screenshots, private repositories or developer-machine paths. Enter your own tester credentials in the game. Other SWG installations are not selected or modified.
+
+If support requests a local recovery, run the installed launcher with --rollback. Verified backups restore replaced files and remove files added by the last update. Required public release checks still apply. There is no additional recovery button in the normal interface.
+
+Public downloads and release notes:
+https://github.com/edgewoodnm/SWG-Old-Flurry-Launcher/releases/latest

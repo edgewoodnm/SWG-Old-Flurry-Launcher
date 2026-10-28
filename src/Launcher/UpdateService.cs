@@ -186,7 +186,11 @@ public sealed class UpdateService : IDisposable
         foreach (var package in manifest.Packages) Validate(package, Repository);
         long baseBytes = manifest.Packages.Sum(p => p.Size);
         var destinationDrive = new DriveInfo(Path.GetPathRoot(Path.GetFullPath(destination))!);
-        if (destinationDrive.AvailableFreeSpace < baseBytes + 1_073_741_824L)
+        var cacheDrive = new DriveInfo(Path.GetPathRoot(Path.GetFullPath(dataRoot))!);
+        long destinationRequired = baseBytes + 1_073_741_824L;
+        if (destinationDrive.Name.Equals(cacheDrive.Name,StringComparison.OrdinalIgnoreCase)) destinationRequired += baseBytes;
+        else if(cacheDrive.AvailableFreeSpace < baseBytes + 536_870_912L)throw new IOException("There is not enough free space for the download cache.");
+        if (destinationDrive.AvailableFreeSpace < destinationRequired)
             throw new IOException("There is not enough free space for the base client and installation workspace.");
         var stage = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(destination))!, ".oldflurry-install-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stage);
@@ -202,7 +206,7 @@ public sealed class UpdateService : IDisposable
             }
             if (!File.Exists(Path.Combine(stage, "SwgClient_r.exe")) || !File.Exists(Path.Combine(stage, "sku0_client.toc"))) throw new InvalidDataException("Base client is incomplete.");
             // Generate public connection defaults locally; no owner's login/user configuration is distributed.
-            await File.WriteAllTextAsync(Path.Combine(stage, "login.cfg"), "[ClientGame]\nloginServerAddress0=73.127.195.38\nloginServerPort0=44453\n");
+            await File.WriteAllTextAsync(Path.Combine(stage, "login.cfg"), FlurryLoginConfigurator.DefaultConfiguration);
             await File.WriteAllTextAsync(Path.Combine(stage, "user.cfg"), "# Personal preferences are stored locally.\n");
             // Recheck after a potentially long download. Never merge a fresh base into an existing client.
             RejectLinks(destination);
